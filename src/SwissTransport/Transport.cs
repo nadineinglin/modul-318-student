@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using Newtonsoft.Json;
+
 
 namespace SwissTransport
 {
@@ -24,11 +26,11 @@ namespace SwissTransport
             return null;
         }
 
-        public StationBoardRoot GetStationBoard(string station, string id)
+        public StationBoardRoot GetStationBoard(string station, string id, DateTime date)
         {
             station = System.Uri.EscapeDataString(station);
             id = System.Uri.EscapeDataString(id);
-            var request = CreateWebRequest("http://transport.opendata.ch/v1/stationboard?station=" + station + "&id=" + id);
+            var request = CreateWebRequest("http://transport.opendata.ch/v1/stationboard?station=" + station + "&id=" + id + "&date" + date);
             var response = request.GetResponse();
             var responseStream = response.GetResponseStream();
 
@@ -43,11 +45,16 @@ namespace SwissTransport
             return null;
         }
 
-        public Connections GetConnections(string fromStation, string toStation)
+        public Connections GetConnections(string fromStation, string toStation, DateTime date)
         {
             fromStation = System.Uri.EscapeDataString(fromStation);
             toStation = System.Uri.EscapeDataString(toStation);
-            var request = CreateWebRequest("http://transport.opendata.ch/v1/connections?from=" + fromStation + "&to=" + toStation);
+            string datestring = date.ToString("yyyy-MM-dd");
+            string timestring = date.ToString("hh:mm");
+        //    string datestring = System.Uri.EscapeDataString(date.Year.ToString() + "-" + date.Month.ToString() + "-" + date.Day.ToString());
+         //   string timestring = System.Uri.EscapeDataString(date.Hour.ToString() + ":" + date.Minute.ToString());
+
+            var request = CreateWebRequest("http://transport.opendata.ch/v1/connections?from=" + fromStation + "&to=" + toStation + "&date=" + datestring + "&time="+timestring);
             var response = request.GetResponse();
             var responseStream = response.GetResponseStream();
 
@@ -71,6 +78,11 @@ namespace SwissTransport
             request.Proxy = webProxy;
             
             return request;
+        }
+
+        public StationBoardRoot GetStationBoard(string station, string id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
